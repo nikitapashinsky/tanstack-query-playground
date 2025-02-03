@@ -15,6 +15,14 @@ export default function List() {
       `https://jsonplaceholder.typicode.com/posts?_page=${page}`,
     );
 
+    if (!response.ok) {
+      throw new Error(
+        `Status: ${response.status}\n` +
+          `Message: ${response.statusText}\n` +
+          `URL: ${response.url}`,
+      );
+    }
+
     return response.json();
   }
 
@@ -24,10 +32,19 @@ export default function List() {
     placeholderData: keepPreviousData,
   });
 
-  if (isPending) return "loading";
+  if (isPending) return "Loading…";
 
-  if (error) return "error: " + error.message;
-
+  if (error)
+    return (
+      <div className="bg-red-100 text-red-950 rounded-xl flex flex-col">
+        <div className="p-4">
+          <p>An error has occurred.</p>
+        </div>
+        <pre className="text-sm bg-red-200 p-4 rounded-b-xl">
+          {error.message}
+        </pre>
+      </div>
+    );
   return (
     <div className="flex flex-col gap-8 w-full">
       {data.map((post: Post) => {
@@ -56,6 +73,7 @@ export default function List() {
             className="bg-neutral-100 rounded-lg px-3 py-1 cursor-pointer disabled:text-neutral-400 disabled:cursor-not-allowed hover:bg-neutral-200 disabled:hover:bg-neutral-100 text-sm font-medium"
             onClick={() => {
               setPage((old) => old + 1);
+              // setPage(100);
             }}
             // Disable the Next Page button until we know a next page is available
             // disabled={isPlaceholderData || !data?.hasMore}
